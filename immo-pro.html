@@ -1,0 +1,2429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ImmoPro — Gestion Agence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --bg2: #ffffff;
+    --bg3: #f0ede8;
+    --sidebar: #1a1a2e;
+    --sidebar-hover: #2a2a4a;
+    --sidebar-active: #c9973a;
+    --accent: #c9973a;
+    --accent2: #e8b86d;
+    --text: #1a1a2e;
+    --text2: #6b6b80;
+    --text3: #9999aa;
+    --border: #e5e2db;
+    --success: #22a06b;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+    --shadow-lg: 0 8px 32px rgba(26,26,46,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--sidebar);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    overflow-y: auto;
+  }
+
+  .nav-section {
+    margin-bottom: 4px;
+  }
+
+  .nav-section-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 12px 12px 6px;
+    font-weight: 600;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 2px;
+  }
+
+  .nav-item:hover {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .nav-item.active {
+    background: rgba(201,151,58,0.15);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 20px;
+  }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .agent-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.05);
+  }
+
+  .agent-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .agent-name {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+
+  .agent-role {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  /* ===== MAIN ===== */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .topbar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .topbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--accent2); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px;
+  }
+
+  /* ===== PAGES ===== */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ===== DASHBOARD ===== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .kpi-card.c1::before { background: var(--accent); }
+  .kpi-card.c2::before { background: var(--success); }
+  .kpi-card.c3::before { background: var(--info); }
+  .kpi-card.c4::before { background: var(--warning); }
+
+  .kpi-label {
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+  }
+
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .kpi-delta {
+    font-size: 12px;
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  .kpi-delta.up { color: var(--success); }
+  .kpi-delta.down { color: var(--danger); }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title a {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* Activité récente */
+  .activity-list { display: flex; flex-direction: column; gap: 12px; }
+
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .activity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  .activity-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .activity-time { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* Visites à venir */
+  .visit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .visit-item:last-child { border-bottom: none; }
+
+  .visit-date {
+    width: 42px;
+    text-align: center;
+    background: var(--bg3);
+    border-radius: var(--radius-sm);
+    padding: 6px 4px;
+    flex-shrink: 0;
+  }
+
+  .visit-day { font-size: 18px; font-weight: 700; color: var(--accent); line-height: 1; font-family: 'Playfair Display', serif; }
+  .visit-month { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .visit-info { flex: 1; }
+  .visit-adresse { font-size: 13px; font-weight: 500; color: var(--text); }
+  .visit-contact { font-size: 12px; color: var(--text2); margin-top: 1px; }
+
+  .visit-heure {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    background: rgba(201,151,58,0.1);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* Barre stats */
+  .stat-bar-wrap { margin-bottom: 14px; }
+  .stat-bar-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-bottom: 5px; }
+  .stat-bar-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .stat-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+
+  /* ===== BIENS ===== */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: var(--bg2);
+    color: var(--text);
+    outline: none;
+    transition: border 0.15s;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+
+  .filter-select {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    background: var(--bg2);
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+  }
+
+  .biens-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px;
+  }
+
+  .bien-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+  }
+
+  .bien-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .bien-photo {
+    height: 160px;
+    background: var(--bg3);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .bien-photo-emoji { font-size: 48px; opacity: 0.3; }
+
+  .bien-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .badge-vente { background: var(--accent); color: #fff; }
+  .badge-location { background: var(--info); color: #fff; }
+  .badge-mandat { background: var(--success); color: #fff; }
+
+  .bien-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .status-dispo { background: rgba(34,160,107,0.15); color: var(--success); }
+  .status-visite { background: rgba(59,130,246,0.15); color: var(--info); }
+  .status-compromis { background: rgba(245,158,11,0.15); color: var(--warning); }
+  .status-loue { background: rgba(201,151,58,0.15); color: var(--accent); }
+
+  .bien-body { padding: 16px; }
+
+  .bien-prix {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .bien-adresse { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
+
+  .bien-specs {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text2);
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+  }
+
+  .bien-spec { display: flex; align-items: center; gap: 4px; }
+
+  .bien-agent {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  .mini-avatar {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* ===== CONTACTS ===== */
+  .contacts-table-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text2);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--bg3); }
+
+  tbody td { padding: 13px 16px; color: var(--text); }
+
+  .contact-name { display: flex; align-items: center; gap: 10px; }
+
+  .contact-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .tag-acheteur { background: rgba(59,130,246,0.12); color: var(--info); }
+  .tag-vendeur { background: rgba(201,151,58,0.12); color: var(--accent); }
+  .tag-locataire { background: rgba(34,160,107,0.12); color: var(--success); }
+  .tag-bailleur { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+
+  /* ===== AGENDA ===== */
+  .agenda-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+  }
+
+  .calendar-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .cal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .cal-nav { display: flex; gap: 4px; }
+
+  .cal-nav-btn {
+    width: 30px; height: 30px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text2);
+    transition: all 0.15s;
+    font-size: 14px;
+  }
+
+  .cal-nav-btn:hover { background: var(--bg3); color: var(--text); }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+
+  .cal-day-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 4px 0 10px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 13px;
+    color: var(--text);
+    position: relative;
+  }
+
+  .cal-day:hover { background: var(--bg3); }
+  .cal-day.today { background: var(--accent); color: #fff; font-weight: 700; }
+  .cal-day.has-event::after {
+    content: '';
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    background: var(--info);
+    position: absolute;
+    bottom: 4px;
+  }
+  .cal-day.today.has-event::after { background: rgba(255,255,255,0.7); }
+  .cal-day.other-month { color: var(--text3); }
+  .cal-day.selected { background: rgba(201,151,58,0.15); color: var(--accent); font-weight: 600; }
+
+  .visites-list-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .visite-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .visite-item:last-child { border-bottom: none; }
+
+  .visite-time-col {
+    width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .visite-time { font-size: 13px; font-weight: 600; color: var(--accent); }
+  .visite-dur { font-size: 10px; color: var(--text3); }
+
+  .visite-line {
+    width: 2px;
+    background: var(--border);
+    margin: 4px auto;
+    border-radius: 1px;
+    flex-shrink: 0;
+    align-self: stretch;
+  }
+
+  .visite-info { flex: 1; }
+  .visite-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .visite-sub { font-size: 12px; color: var(--text2); }
+
+  .visite-status {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 20px;
+    align-self: flex-start;
+    margin-top: 2px;
+  }
+
+  /* ===== MANDATS ===== */
+  .mandats-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .mandat-stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mandat-stat-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .mandat-stat-val { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--text); }
+  .mandat-stat-label { font-size: 12px; color: var(--text2); margin-top: 1px; }
+
+  .mandats-table-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 80px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,46,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    padding: 32px;
+    width: 540px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text2);
+    line-height: 1;
+  }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text2); letter-spacing: 0.3px; }
+
+  .form-input, .form-select, .form-textarea {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: border 0.15s;
+  }
+
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-textarea { resize: vertical; min-height: 80px; }
+
+  .modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 2000;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--success); }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ===== EMPTY STATE ===== */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+  }
+
+  .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--text); margin-bottom: 6px; }
+  .empty-state p { font-size: 13px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--bg3);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    margin-bottom: 20px;
+    width: fit-content;
+  }
+
+  .tab {
+    padding: 7px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .tab.active {
+    background: var(--bg2);
+    color: var(--text);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  /* Chart bars */
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 80px;
+    padding-top: 10px;
+  }
+
+  .mini-bar {
+    flex: 1;
+    background: var(--bg3);
+    border-radius: 3px 3px 0 0;
+    transition: height 0.5s ease;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .mini-bar.active { background: var(--accent); }
+  .mini-bar:hover { opacity: 0.8; }
+
+  .mini-chart-labels {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .mini-chart-labels span {
+    flex: 1;
+    text-align: center;
+    font-size: 10px;
+    color: var(--text3);
+  }
+
+  /* ===== ACTION BUTTONS ===== */
+  .action-btns {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .bien-card:hover .action-btns,
+  tbody tr:hover .action-btns,
+  .visite-item:hover .action-btns { opacity: 1; }
+
+  .action-btn {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    font-size: 13px;
+  }
+
+  .action-btn-edit {
+    background: rgba(201,151,58,0.1);
+    color: var(--accent);
+  }
+
+  .action-btn-edit:hover { background: rgba(201,151,58,0.25); }
+
+  .action-btn-delete {
+    background: rgba(239,68,68,0.1);
+    color: var(--danger);
+  }
+
+  .action-btn-delete:hover { background: rgba(239,68,68,0.25); }
+
+  /* Confirm delete overlay */
+  .confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,46,0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .confirm-overlay.open { display: flex; }
+
+  .confirm-box {
+    background: var(--bg2);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    width: 380px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+
+  .confirm-icon { font-size: 36px; margin-bottom: 12px; }
+  .confirm-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .confirm-text { font-size: 13px; color: var(--text2); margin-bottom: 24px; }
+  .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+  @media (max-width: 1100px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .agenda-layout { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">ImmoPro</div>
+    <div class="logo-sub">Gestion Agence</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-label">Principal</div>
+      <div class="nav-item active" onclick="navigate('dashboard', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Tableau de bord
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Portefeuille</div>
+      <div class="nav-item" onclick="navigate('biens', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Biens
+        <span class="nav-badge" id="nb-biens">0</span>
+      </div>
+      <div class="nav-item" onclick="navigate('mandats', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Mandats
+        <span class="nav-badge" id="nb-mandats">0</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Relation client</div>
+      <div class="nav-item" onclick="navigate('contacts', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Contacts
+        <span class="nav-badge" id="nb-contacts">0</span>
+      </div>
+      <div class="nav-item" onclick="navigate('agenda', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agenda & Visites
+        <span class="nav-badge" id="nb-visites">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="agent-card">
+      <div class="agent-avatar">RA</div>
+      <div>
+        <div class="agent-name">Romu Agent</div>
+        <div class="agent-role">Directeur</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Tableau de bord</div>
+    <div class="topbar-right">
+      <button class="topbar-btn btn-ghost" onclick="openModal('modal-bien')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Bien
+      </button>
+      <button class="topbar-btn btn-ghost" onclick="openModal('modal-contact')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Contact
+      </button>
+      <button class="topbar-btn btn-primary" onclick="openModal('modal-visite')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Visite
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PAGE: DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="kpi-grid">
+        <div class="kpi-card c1">
+          <div class="kpi-label">Biens actifs</div>
+          <div class="kpi-value" id="kpi-biens">—</div>
+          <div class="kpi-delta up" id="kpi-biens-delta">↑ 3 ce mois</div>
+        </div>
+        <div class="kpi-card c2">
+          <div class="kpi-label">Transactions en cours</div>
+          <div class="kpi-value" id="kpi-transactions">—</div>
+          <div class="kpi-delta up">↑ CA estimé</div>
+        </div>
+        <div class="kpi-card c3">
+          <div class="kpi-label">Contacts CRM</div>
+          <div class="kpi-value" id="kpi-contacts">—</div>
+          <div class="kpi-delta up">↑ 5 nouveaux</div>
+        </div>
+        <div class="kpi-card c4">
+          <div class="kpi-label">Visites ce mois</div>
+          <div class="kpi-value" id="kpi-visites">—</div>
+          <div class="kpi-delta up">↑ +12% vs mois dernier</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-title">
+              Activité récente
+              <a>Tout voir</a>
+            </div>
+            <div class="activity-list" id="activity-list">
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--accent)"></div>
+                <div>
+                  <div class="activity-text">Nouveau bien ajouté — <strong>Appartement T3, Annecy</strong></div>
+                  <div class="activity-time">Il y a 2h</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--success)"></div>
+                <div>
+                  <div class="activity-text">Visite confirmée — <strong>Martin Dupont</strong> — 12 rue des Alpes</div>
+                  <div class="activity-time">Il y a 4h</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--info)"></div>
+                <div>
+                  <div class="activity-text">Nouveau contact — <strong>Sophie Bernard</strong> (Acheteur)</div>
+                  <div class="activity-time">Hier, 14:30</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot" style="background:var(--warning)"></div>
+                <div>
+                  <div class="activity-text">Mandat exclusif signé — <strong>Villa Les Combes, Megève</strong></div>
+                  <div class="activity-time">Hier, 10:00</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Répartition du portefeuille</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+              <div>
+                <div class="stat-bar-wrap">
+                  <div class="stat-bar-header"><span>Vente</span><span id="pct-vente">0%</span></div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-vente" style="width:0%;background:var(--accent)"></div></div>
+                </div>
+                <div class="stat-bar-wrap">
+                  <div class="stat-bar-header"><span>Location</span><span id="pct-location">0%</span></div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-location" style="width:0%;background:var(--info)"></div></div>
+                </div>
+              </div>
+              <div>
+                <div class="stat-bar-wrap">
+                  <div class="stat-bar-header"><span>Disponible</span><span id="pct-dispo">0%</span></div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-dispo" style="width:0%;background:var(--success)"></div></div>
+                </div>
+                <div class="stat-bar-wrap">
+                  <div class="stat-bar-header"><span>En cours</span><span id="pct-cours">0%</span></div>
+                  <div class="stat-bar-track"><div class="stat-bar-fill" id="bar-cours" style="width:0%;background:var(--warning)"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="card">
+            <div class="card-title">
+              Prochaines visites
+              <a onclick="navigate('agenda', document.querySelector('[onclick*=agenda]'))">Agenda →</a>
+            </div>
+            <div id="dash-visites">
+              <div class="empty-state" style="padding:20px 10px">
+                <div class="empty-state-icon">📅</div>
+                <p style="font-size:12px">Aucune visite planifiée</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Mandats actifs par agent</div>
+            <div style="margin-bottom:8px">
+              <div class="stat-bar-wrap">
+                <div class="stat-bar-header"><span>Romu Agent</span><span id="agent-mandats">0</span></div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width:70%;background:var(--accent)"></div></div>
+              </div>
+              <div class="stat-bar-wrap">
+                <div class="stat-bar-header"><span>Claire Martin</span><span>4</span></div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width:40%;background:var(--info)"></div></div>
+              </div>
+              <div class="stat-bar-wrap">
+                <div class="stat-bar-header"><span>Luc Bernard</span><span>2</span></div>
+                <div class="stat-bar-track"><div class="stat-bar-fill" style="width:20%;background:var(--success)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: BIENS -->
+    <div id="page-biens" class="page">
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Rechercher un bien (adresse, ville...)" id="search-biens" oninput="renderBiens()">
+        <select class="filter-select" id="filter-type-bien" onchange="renderBiens()">
+          <option value="">Tous les types</option>
+          <option value="Vente">Vente</option>
+          <option value="Location">Location</option>
+        </select>
+        <select class="filter-select" id="filter-status-bien" onchange="renderBiens()">
+          <option value="">Tous les statuts</option>
+          <option value="Disponible">Disponible</option>
+          <option value="En visite">En visite</option>
+          <option value="Compromis">Compromis</option>
+          <option value="Loué">Loué</option>
+        </select>
+      </div>
+      <div class="biens-grid" id="biens-grid"></div>
+    </div>
+
+    <!-- PAGE: CONTACTS -->
+    <div id="page-contacts" class="page">
+      <div class="search-bar">
+        <input type="text" class="search-input" placeholder="Rechercher un contact (nom, email...)" id="search-contacts" oninput="renderContacts()">
+        <select class="filter-select" id="filter-type-contact" onchange="renderContacts()">
+          <option value="">Tous les profils</option>
+          <option value="Acheteur">Acheteur</option>
+          <option value="Vendeur">Vendeur</option>
+          <option value="Locataire">Locataire</option>
+          <option value="Bailleur">Bailleur</option>
+        </select>
+      </div>
+      <div class="contacts-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Contact</th>
+              <th>Profil</th>
+              <th>Téléphone</th>
+              <th>Email</th>
+              <th>Budget / Loyer</th>
+              <th>Créé le</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="contacts-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: AGENDA -->
+    <div id="page-agenda" class="page">
+      <div class="agenda-layout">
+        <div class="calendar-wrap">
+          <div class="cal-header">
+            <div class="cal-title" id="cal-month-title"></div>
+            <div class="cal-nav">
+              <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+              <button class="cal-nav-btn" onclick="calNext()">›</button>
+            </div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <div class="visites-list-wrap">
+          <div class="card-title" style="font-family:'Playfair Display',serif;font-size:15px;font-weight:600;margin-bottom:16px">
+            Visites planifiées
+          </div>
+          <div id="visites-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: MANDATS -->
+    <div id="page-mandats" class="page">
+      <div class="mandats-stats">
+        <div class="mandat-stat-card">
+          <div class="mandat-stat-icon" style="background:rgba(201,151,58,0.1)">📋</div>
+          <div>
+            <div class="mandat-stat-val" id="ms-total">0</div>
+            <div class="mandat-stat-label">Mandats totaux</div>
+          </div>
+        </div>
+        <div class="mandat-stat-card">
+          <div class="mandat-stat-icon" style="background:rgba(34,160,107,0.1)">✅</div>
+          <div>
+            <div class="mandat-stat-val" id="ms-exclusif">0</div>
+            <div class="mandat-stat-label">Mandats exclusifs</div>
+          </div>
+        </div>
+        <div class="mandat-stat-card">
+          <div class="mandat-stat-icon" style="background:rgba(239,68,68,0.1)">⏰</div>
+          <div>
+            <div class="mandat-stat-val" id="ms-expire">0</div>
+            <div class="mandat-stat-label">Expirent ce mois</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mandats-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Bien</th>
+              <th>Propriétaire</th>
+              <th>Type</th>
+              <th>Prix mandaté</th>
+              <th>Date début</th>
+              <th>Expiration</th>
+              <th>Avancement</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="mandats-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL: BIEN -->
+<div class="modal-overlay" id="modal-bien">
+  <div class="modal">
+    <div class="modal-title">
+      Ajouter un bien
+      <button class="modal-close" onclick="closeModal('modal-bien')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Type de bien</label>
+        <select class="form-select" id="bien-type-bien">
+          <option>Appartement</option>
+          <option>Maison</option>
+          <option>Villa</option>
+          <option>Studio</option>
+          <option>Local commercial</option>
+          <option>Terrain</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Transaction</label>
+        <select class="form-select" id="bien-transaction">
+          <option>Vente</option>
+          <option>Location</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Adresse</label>
+        <input type="text" class="form-input" id="bien-adresse" placeholder="12 rue des Alpes, Annecy">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prix (€)</label>
+        <input type="number" class="form-input" id="bien-prix" placeholder="320000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Surface (m²)</label>
+        <input type="number" class="form-input" id="bien-surface" placeholder="75">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pièces</label>
+        <input type="number" class="form-input" id="bien-pieces" placeholder="3">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Statut</label>
+        <select class="form-select" id="bien-statut">
+          <option>Disponible</option>
+          <option>En visite</option>
+          <option>Compromis</option>
+          <option>Loué</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="bien-desc" placeholder="Beau T3 avec vue sur les Aravis..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-bien')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="saveBien()">Ajouter le bien</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONTACT -->
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal">
+    <div class="modal-title">
+      Ajouter un contact
+      <button class="modal-close" onclick="closeModal('modal-contact')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Prénom</label>
+        <input type="text" class="form-input" id="contact-prenom" placeholder="Sophie">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input type="text" class="form-input" id="contact-nom" placeholder="Bernard">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input type="tel" class="form-input" id="contact-tel" placeholder="06 12 34 56 78">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="contact-email" placeholder="sophie@email.fr">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Profil</label>
+        <select class="form-select" id="contact-profil">
+          <option>Acheteur</option>
+          <option>Vendeur</option>
+          <option>Locataire</option>
+          <option>Bailleur</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget / Loyer max (€)</label>
+        <input type="number" class="form-input" id="contact-budget" placeholder="350000">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Recherche / Notes</label>
+        <textarea class="form-textarea" id="contact-notes" placeholder="Cherche T3 à Annecy, garage souhaité..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-contact')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="saveContact()">Ajouter le contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VISITE -->
+<div class="modal-overlay" id="modal-visite">
+  <div class="modal">
+    <div class="modal-title">
+      Planifier une visite
+      <button class="modal-close" onclick="closeModal('modal-visite')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">Bien</label>
+        <select class="form-select" id="visite-bien">
+          <option value="">— Sélectionner un bien —</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Contact</label>
+        <select class="form-select" id="visite-contact">
+          <option value="">— Sélectionner un contact —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="visite-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heure</label>
+        <input type="time" class="form-input" id="visite-heure">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Durée (min)</label>
+        <select class="form-select" id="visite-duree">
+          <option value="30">30 min</option>
+          <option value="45">45 min</option>
+          <option value="60" selected>1h</option>
+          <option value="90">1h30</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Statut</label>
+        <select class="form-select" id="visite-statut">
+          <option>Confirmée</option>
+          <option>En attente</option>
+          <option>Annulée</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="visite-notes" placeholder="Clé chez le gardien..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-visite')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="saveVisite()">Planifier</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Confirmer la suppression</div>
+    <div class="confirm-text" id="confirm-text">Cette action est irréversible.</div>
+    <div class="confirm-btns">
+      <button class="topbar-btn btn-ghost" onclick="closeConfirm()">Annuler</button>
+      <button class="topbar-btn" style="background:var(--danger);color:#fff" id="confirm-ok-btn">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT BIEN -->
+<div class="modal-overlay" id="modal-edit-bien">
+  <div class="modal">
+    <div class="modal-title">
+      Modifier le bien
+      <button class="modal-close" onclick="closeModal('modal-edit-bien')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Type de bien</label>
+        <select class="form-select" id="edit-bien-type-bien">
+          <option>Appartement</option><option>Maison</option><option>Villa</option>
+          <option>Studio</option><option>Local commercial</option><option>Terrain</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Transaction</label>
+        <select class="form-select" id="edit-bien-transaction">
+          <option>Vente</option><option>Location</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Adresse</label>
+        <input type="text" class="form-input" id="edit-bien-adresse">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prix (€)</label>
+        <input type="number" class="form-input" id="edit-bien-prix">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Surface (m²)</label>
+        <input type="number" class="form-input" id="edit-bien-surface">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pièces</label>
+        <input type="number" class="form-input" id="edit-bien-pieces">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Statut</label>
+        <select class="form-select" id="edit-bien-statut">
+          <option>Disponible</option><option>En visite</option><option>Compromis</option><option>Loué</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" id="edit-bien-desc"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-edit-bien')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="updateBien()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT CONTACT -->
+<div class="modal-overlay" id="modal-edit-contact">
+  <div class="modal">
+    <div class="modal-title">
+      Modifier le contact
+      <button class="modal-close" onclick="closeModal('modal-edit-contact')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Prénom</label>
+        <input type="text" class="form-input" id="edit-contact-prenom">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom</label>
+        <input type="text" class="form-input" id="edit-contact-nom">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input type="tel" class="form-input" id="edit-contact-tel">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="edit-contact-email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Profil</label>
+        <select class="form-select" id="edit-contact-profil">
+          <option>Acheteur</option><option>Vendeur</option><option>Locataire</option><option>Bailleur</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget / Loyer max (€)</label>
+        <input type="number" class="form-input" id="edit-contact-budget">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="edit-contact-notes"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-edit-contact')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="updateContact()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT VISITE -->
+<div class="modal-overlay" id="modal-edit-visite">
+  <div class="modal">
+    <div class="modal-title">
+      Modifier la visite
+      <button class="modal-close" onclick="closeModal('modal-edit-visite')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">Bien</label>
+        <select class="form-select" id="edit-visite-bien"></select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Contact</label>
+        <select class="form-select" id="edit-visite-contact"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="edit-visite-date">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Heure</label>
+        <input type="time" class="form-input" id="edit-visite-heure">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Durée (min)</label>
+        <select class="form-select" id="edit-visite-duree">
+          <option value="30">30 min</option><option value="45">45 min</option>
+          <option value="60">1h</option><option value="90">1h30</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Statut</label>
+        <select class="form-select" id="edit-visite-statut">
+          <option>Confirmée</option><option>En attente</option><option>Annulée</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Notes</label>
+        <textarea class="form-textarea" id="edit-visite-notes"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-edit-visite')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="updateVisite()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT MANDAT -->
+<div class="modal-overlay" id="modal-edit-mandat">
+  <div class="modal">
+    <div class="modal-title">
+      Modifier le mandat
+      <button class="modal-close" onclick="closeModal('modal-edit-mandat')">×</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label">Bien</label>
+        <select class="form-select" id="edit-mandat-bien"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Propriétaire</label>
+        <input type="text" class="form-input" id="edit-mandat-proprietaire">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Type de mandat</label>
+        <select class="form-select" id="edit-mandat-type">
+          <option>Exclusif</option><option>Simple</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prix mandaté (€)</label>
+        <input type="number" class="form-input" id="edit-mandat-prix">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Avancement (%)</label>
+        <input type="number" class="form-input" id="edit-mandat-avancement" min="0" max="100">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date début</label>
+        <input type="date" class="form-input" id="edit-mandat-debut">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date fin</label>
+        <input type="date" class="form-input" id="edit-mandat-fin">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="topbar-btn btn-ghost" onclick="closeModal('modal-edit-mandat')">Annuler</button>
+      <button class="topbar-btn btn-primary" onclick="updateMandat()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===================== DATA =====================
+const COLORS = ['#c9973a','#3b82f6','#22a06b','#ef4444','#8b5cf6','#f59e0b','#ec4899'];
+
+function getColor(i) { return COLORS[i % COLORS.length]; }
+
+function loadData(key, def) {
+  try { return JSON.parse(localStorage.getItem('immpro_' + key)) || def; } catch { return def; }
+}
+
+function saveData(key, val) {
+  localStorage.setItem('immpro_' + key, JSON.stringify(val));
+}
+
+let biens = loadData('biens', [
+  { id: 1, type: 'Appartement', transaction: 'Vente', adresse: '14 rue du Lac, Annecy', prix: 385000, surface: 82, pieces: 4, statut: 'Disponible', desc: 'Superbe T4 avec vue lac', date: '2024-03-01' },
+  { id: 2, type: 'Maison', transaction: 'Vente', adresse: '8 chemin des Chalets, Megève', prix: 1250000, surface: 210, pieces: 7, statut: 'En visite', desc: 'Chalet de prestige, piscine', date: '2024-02-15' },
+  { id: 3, type: 'Studio', transaction: 'Location', adresse: '3 avenue du Mont-Blanc, Chamonix', prix: 850, surface: 28, pieces: 1, statut: 'Disponible', desc: 'Studio meublé, proche télécabine', date: '2024-03-10' },
+  { id: 4, type: 'Appartement', transaction: 'Location', adresse: '22 rue Sommeiller, Annecy', prix: 1200, surface: 65, pieces: 3, statut: 'Loué', desc: 'T3 lumineux, balcon', date: '2024-01-20' },
+  { id: 5, type: 'Villa', transaction: 'Vente', adresse: 'Route des Glières, Thônes', prix: 780000, surface: 185, pieces: 6, statut: 'Compromis', desc: 'Belle villa avec piscine et terrain', date: '2024-03-05' },
+]);
+
+let contacts = loadData('contacts', [
+  { id: 1, prenom: 'Martin', nom: 'Dupont', tel: '06 11 22 33 44', email: 'martin@email.fr', profil: 'Acheteur', budget: 400000, notes: 'Cherche T4 Annecy centre', date: '2024-02-10' },
+  { id: 2, prenom: 'Sophie', nom: 'Bernard', tel: '06 55 66 77 88', email: 'sophie@email.fr', profil: 'Acheteur', budget: 300000, notes: 'Priorité école primaire proche', date: '2024-03-01' },
+  { id: 3, prenom: 'Pierre', nom: 'Fontaine', tel: '06 99 00 11 22', email: 'pierre@email.fr', profil: 'Vendeur', budget: 0, notes: 'Vend maison suite succession', date: '2024-01-15' },
+  { id: 4, prenom: 'Camille', nom: 'Morel', tel: '07 12 23 34 45', email: 'camille@email.fr', profil: 'Locataire', budget: 1300, notes: 'Jeune couple, CDI, garant dispo', date: '2024-03-12' },
+  { id: 5, prenom: 'Jacques', nom: 'Aubert', tel: '06 33 44 55 66', email: 'jacques@email.fr', profil: 'Bailleur', budget: 0, notes: 'Propriétaire 3 biens à louer', date: '2024-02-20' },
+]);
+
+let visites = loadData('visites', [
+  { id: 1, bienId: 1, contactId: 1, date: '2024-04-18', heure: '10:00', duree: 60, statut: 'Confirmée', notes: '' },
+  { id: 2, bienId: 2, contactId: 2, date: '2024-04-19', heure: '14:30', duree: 90, statut: 'Confirmée', notes: 'Amener clés bureau' },
+  { id: 3, bienId: 3, contactId: 4, date: '2024-04-22', heure: '11:00', duree: 30, statut: 'En attente', notes: '' },
+]);
+
+let mandats = loadData('mandats', [
+  { id: 1, bienId: 1, proprietaire: 'Pierre Fontaine', type: 'Exclusif', prix: 385000, debut: '2024-01-10', fin: '2024-07-10', avancement: 60 },
+  { id: 2, bienId: 2, proprietaire: 'Marie Aubert', type: 'Simple', prix: 1250000, debut: '2024-02-01', fin: '2024-08-01', avancement: 30 },
+  { id: 3, bienId: 5, proprietaire: 'Jacques Morel', type: 'Exclusif', prix: 780000, debut: '2024-03-01', fin: '2024-09-01', avancement: 80 },
+]);
+
+// ===================== NAVIGATION =====================
+const pageTitles = {
+  dashboard: 'Tableau de bord',
+  biens: 'Gestion des biens',
+  contacts: 'Contacts CRM',
+  agenda: 'Agenda & Visites',
+  mandats: 'Mandats'
+};
+
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('page-title').textContent = pageTitles[page];
+
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'biens') renderBiens();
+  if (page === 'contacts') renderContacts();
+  if (page === 'agenda') renderAgenda();
+  if (page === 'mandats') renderMandats();
+}
+
+// ===================== RENDER DASHBOARD =====================
+function renderDashboard() {
+  document.getElementById('kpi-biens').textContent = biens.length;
+  document.getElementById('kpi-transactions').textContent = biens.filter(b => b.statut === 'Compromis').length;
+  document.getElementById('kpi-contacts').textContent = contacts.length;
+  document.getElementById('kpi-visites').textContent = visites.length;
+
+  document.getElementById('nb-biens').textContent = biens.length;
+  document.getElementById('nb-contacts').textContent = contacts.length;
+  document.getElementById('nb-visites').textContent = visites.length;
+  document.getElementById('nb-mandats').textContent = mandats.length;
+
+  // Répartition
+  const vente = biens.filter(b => b.transaction === 'Vente').length;
+  const loc = biens.filter(b => b.transaction === 'Location').length;
+  const total = biens.length || 1;
+  const dispo = biens.filter(b => b.statut === 'Disponible').length;
+  const cours = biens.filter(b => b.statut !== 'Disponible').length;
+
+  const pv = Math.round(vente/total*100);
+  const pl = Math.round(loc/total*100);
+  const pd = Math.round(dispo/total*100);
+  const pc = Math.round(cours/total*100);
+
+  document.getElementById('pct-vente').textContent = pv + '%';
+  document.getElementById('pct-location').textContent = pl + '%';
+  document.getElementById('pct-dispo').textContent = pd + '%';
+  document.getElementById('pct-cours').textContent = pc + '%';
+
+  setTimeout(() => {
+    document.getElementById('bar-vente').style.width = pv + '%';
+    document.getElementById('bar-location').style.width = pl + '%';
+    document.getElementById('bar-dispo').style.width = pd + '%';
+    document.getElementById('bar-cours').style.width = pc + '%';
+  }, 100);
+
+  // Prochaines visites dash
+  const upcoming = visites.slice(0, 3);
+  const dashVisites = document.getElementById('dash-visites');
+  if (!upcoming.length) {
+    dashVisites.innerHTML = '<div class="empty-state" style="padding:20px 10px"><div class="empty-state-icon">📅</div><p style="font-size:12px">Aucune visite planifiée</p></div>';
+  } else {
+    dashVisites.innerHTML = upcoming.map(v => {
+      const b = biens.find(x => x.id === v.bienId);
+      const c = contacts.find(x => x.id === v.contactId);
+      const d = new Date(v.date);
+      return `
+        <div class="visit-item">
+          <div class="visit-date">
+            <div class="visit-day">${d.getDate()}</div>
+            <div class="visit-month">${d.toLocaleDateString('fr',{month:'short'})}</div>
+          </div>
+          <div class="visit-info">
+            <div class="visit-adresse">${b ? b.adresse : '—'}</div>
+            <div class="visit-contact">${c ? c.prenom + ' ' + c.nom : '—'}</div>
+          </div>
+          <div class="visit-heure">${v.heure}</div>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('agent-mandats').textContent = mandats.length;
+}
+
+// ===================== RENDER BIENS =====================
+function renderBiens() {
+  const q = (document.getElementById('search-biens')?.value || '').toLowerCase();
+  const ft = document.getElementById('filter-type-bien')?.value || '';
+  const fs = document.getElementById('filter-status-bien')?.value || '';
+
+  let filtered = biens.filter(b => {
+    const match = !q || b.adresse.toLowerCase().includes(q) || b.type.toLowerCase().includes(q);
+    const matchT = !ft || b.transaction === ft;
+    const matchS = !fs || b.statut === fs;
+    return match && matchT && matchS;
+  });
+
+  const grid = document.getElementById('biens-grid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">🏠</div><h3>Aucun bien trouvé</h3><p>Ajoutez votre premier bien avec le bouton "+ Bien"</p></div>';
+    return;
+  }
+
+  const emojis = { Appartement:'🏢', Maison:'🏡', Villa:'🏖️', Studio:'🚪', 'Local commercial':'🏪', Terrain:'🌿' };
+  const statusCls = { Disponible:'status-dispo', 'En visite':'status-visite', Compromis:'status-compromis', Loué:'status-loue' };
+
+  grid.innerHTML = filtered.map(b => `
+    <div class="bien-card" onclick="editBien(${b.id})">
+      <div class="bien-photo">
+        <div class="bien-photo-emoji">${emojis[b.type] || '🏠'}</div>
+        <span class="bien-badge ${b.transaction === 'Vente' ? 'badge-vente' : 'badge-location'}">${b.transaction}</span>
+        <span class="bien-status ${statusCls[b.statut] || ''}">${b.statut}</span>
+      </div>
+      <div class="bien-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div class="bien-prix">${b.transaction === 'Vente' ? formatPrix(b.prix) + ' €' : formatPrix(b.prix) + ' €/mois'}</div>
+          <div class="action-btns" onclick="event.stopPropagation()">
+            <button class="action-btn action-btn-edit" onclick="editBien(${b.id})" title="Modifier">✏️</button>
+            <button class="action-btn action-btn-delete" onclick="confirmDelete('bien',${b.id})" title="Supprimer">🗑️</button>
+          </div>
+        </div>
+        <div class="bien-adresse">${b.type} · ${b.adresse}</div>
+        <div class="bien-specs">
+          <span class="bien-spec">📐 ${b.surface} m²</span>
+          <span class="bien-spec">🚪 ${b.pieces} pièce${b.pieces > 1 ? 's' : ''}</span>
+        </div>
+        <div class="bien-agent">
+          <div class="mini-avatar">RA</div>
+          Romu Agent
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ===================== RENDER CONTACTS =====================
+function renderContacts() {
+  const q = (document.getElementById('search-contacts')?.value || '').toLowerCase();
+  const ft = document.getElementById('filter-type-contact')?.value || '';
+
+  let filtered = contacts.filter(c => {
+    const match = !q || (c.prenom + ' ' + c.nom).toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
+    const matchT = !ft || c.profil === ft;
+    return match && matchT;
+  });
+
+  const profilCls = { Acheteur:'tag-acheteur', Vendeur:'tag-vendeur', Locataire:'tag-locataire', Bailleur:'tag-bailleur' };
+
+  const tbody = document.getElementById('contacts-tbody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">👥</div><h3>Aucun contact</h3><p>Ajoutez votre premier contact</p></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((c, i) => `
+    <tr onclick="editContact(${c.id})">
+      <td>
+        <div class="contact-name">
+          <div class="contact-avatar" style="background:${getColor(i)}">${c.prenom[0]}${c.nom[0]}</div>
+          <div>
+            <div style="font-weight:500">${c.prenom} ${c.nom}</div>
+            <div style="font-size:11px;color:var(--text3)">${c.notes ? c.notes.slice(0,40) + '...' : ''}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="tag ${profilCls[c.profil] || ''}">${c.profil}</span></td>
+      <td>${c.tel}</td>
+      <td>${c.email}</td>
+      <td>${c.budget ? formatPrix(c.budget) + ' €' + (c.profil === 'Locataire' ? '/mois' : '') : '—'}</td>
+      <td style="color:var(--text3)">${c.date}</td>
+      <td onclick="event.stopPropagation()">
+        <div class="action-btns" style="opacity:1">
+          <button class="action-btn action-btn-edit" onclick="editContact(${c.id})" title="Modifier">✏️</button>
+          <button class="action-btn action-btn-delete" onclick="confirmDelete('contact',${c.id})" title="Supprimer">🗑️</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ===================== RENDER AGENDA =====================
+let calYear, calMonth;
+
+function renderAgenda() {
+  const now = new Date();
+  if (!calYear) { calYear = now.getFullYear(); calMonth = now.getMonth(); }
+  renderCalendar();
+  renderVisitesList();
+}
+
+function renderCalendar() {
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  document.getElementById('cal-month-title').textContent = months[calMonth] + ' ' + calYear;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const prevDays = new Date(calYear, calMonth, 0).getDate();
+  const start = (firstDay === 0 ? 6 : firstDay - 1);
+
+  const visiteDates = new Set(visites.map(v => v.date));
+  const today = new Date();
+
+  let html = ['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(d => `<div class="cal-day-label">${d}</div>`).join('');
+
+  for (let i = 0; i < start; i++) {
+    const d = prevDays - start + 1 + i;
+    html += `<div class="cal-day other-month">${d}</div>`;
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+    const hasEvent = visiteDates.has(dateStr);
+    html += `<div class="cal-day ${isToday ? 'today' : ''} ${hasEvent ? 'has-event' : ''}" onclick="filterVisitesByDate('${dateStr}')">${d}</div>`;
+  }
+
+  const remaining = 42 - start - daysInMonth;
+  for (let d = 1; d <= remaining; d++) {
+    html += `<div class="cal-day other-month">${d}</div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+let filteredDate = null;
+
+function filterVisitesByDate(date) {
+  filteredDate = date;
+  document.querySelectorAll('.cal-day').forEach(el => el.classList.remove('selected'));
+  event.target.classList.add('selected');
+  renderVisitesList(date);
+}
+
+function renderVisitesList(dateFilter) {
+  const list = document.getElementById('visites-list');
+  let filtered = dateFilter ? visites.filter(v => v.date === dateFilter) : visites;
+  filtered = [...filtered].sort((a, b) => (a.date + a.heure).localeCompare(b.date + b.heure));
+
+  const statusStyle = {
+    'Confirmée': 'background:rgba(34,160,107,0.12);color:var(--success)',
+    'En attente': 'background:rgba(245,158,11,0.12);color:var(--warning)',
+    'Annulée': 'background:rgba(239,68,68,0.12);color:var(--danger)'
+  };
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty-state" style="padding:20px 10px"><div class="empty-state-icon">📅</div><p style="font-size:12px">Aucune visite' + (dateFilter ? ' ce jour' : '') + '</p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(v => {
+    const b = biens.find(x => x.id === v.bienId);
+    const c = contacts.find(x => x.id === v.contactId);
+    return `
+      <div class="visite-item" onclick="editVisite(${v.id})">
+        <div class="visite-time-col">
+          <div class="visite-time">${v.heure}</div>
+          <div class="visite-dur">${v.duree}min</div>
+        </div>
+        <div style="width:2px;background:var(--border);margin:4px 0;border-radius:1px;flex-shrink:0"></div>
+        <div class="visite-info" style="flex:1;padding-left:10px">
+          <div class="visite-title">${b ? b.adresse : '—'}</div>
+          <div class="visite-sub">${c ? c.prenom + ' ' + c.nom : '—'} · ${v.date}</div>
+          <span class="visite-status" style="${statusStyle[v.statut] || ''}">${v.statut}</span>
+        </div>
+        <div class="action-btns" onclick="event.stopPropagation()" style="flex-shrink:0">
+          <button class="action-btn action-btn-edit" onclick="editVisite(${v.id})" title="Modifier">✏️</button>
+          <button class="action-btn action-btn-delete" onclick="confirmDelete('visite',${v.id})" title="Supprimer">🗑️</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ===================== RENDER MANDATS =====================
+function renderMandats() {
+  document.getElementById('ms-total').textContent = mandats.length;
+  document.getElementById('ms-exclusif').textContent = mandats.filter(m => m.type === 'Exclusif').length;
+
+  const now = new Date();
+  const thisMonth = mandats.filter(m => {
+    const fin = new Date(m.fin);
+    return fin.getMonth() === now.getMonth() && fin.getFullYear() === now.getFullYear();
+  }).length;
+  document.getElementById('ms-expire').textContent = thisMonth;
+
+  const tbody = document.getElementById('mandats-tbody');
+  if (!mandats.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">📋</div><h3>Aucun mandat</h3></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = mandats.map(m => {
+    const b = biens.find(x => x.id === m.bienId);
+    return `
+      <tr onclick="editMandat(${m.id})">
+        <td><div style="font-weight:500;font-size:13px">${b ? b.type + ' - ' + b.adresse.slice(0,30) + '...' : '—'}</div></td>
+        <td>${m.proprietaire}</td>
+        <td><span class="tag ${m.type === 'Exclusif' ? 'tag-vendeur' : 'tag-acheteur'}">${m.type}</span></td>
+        <td style="font-weight:600">${formatPrix(m.prix)} €</td>
+        <td style="color:var(--text2)">${m.debut}</td>
+        <td style="color:${isExpiringSoon(m.fin) ? 'var(--danger)' : 'var(--text2)'}">${m.fin}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="progress-bar"><div class="progress-fill" style="width:${m.avancement}%"></div></div>
+            <span style="font-size:12px;color:var(--text2)">${m.avancement}%</span>
+          </div>
+        </td>
+        <td onclick="event.stopPropagation()">
+          <div class="action-btns" style="opacity:1">
+            <button class="action-btn action-btn-edit" onclick="editMandat(${m.id})" title="Modifier">✏️</button>
+            <button class="action-btn action-btn-delete" onclick="confirmDelete('mandat',${m.id})" title="Supprimer">🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function isExpiringSoon(dateStr) {
+  const fin = new Date(dateStr);
+  const now = new Date();
+  const diff = (fin - now) / (1000 * 60 * 60 * 24);
+  return diff < 30 && diff > 0;
+}
+
+// ===================== MODALS =====================
+function openModal(id) {
+  // populate selects
+  if (id === 'modal-visite') {
+    document.getElementById('visite-bien').innerHTML =
+      '<option value="">— Bien —</option>' +
+      biens.map(b => `<option value="${b.id}">${b.type} - ${b.adresse}</option>`).join('');
+    document.getElementById('visite-contact').innerHTML =
+      '<option value="">— Contact —</option>' +
+      contacts.map(c => `<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('');
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('visite-date').value = today;
+    document.getElementById('visite-heure').value = '10:00';
+  }
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ===================== SAVES =====================
+function saveBien() {
+  const b = {
+    id: Date.now(),
+    type: document.getElementById('bien-type-bien').value,
+    transaction: document.getElementById('bien-transaction').value,
+    adresse: document.getElementById('bien-adresse').value,
+    prix: parseFloat(document.getElementById('bien-prix').value) || 0,
+    surface: parseFloat(document.getElementById('bien-surface').value) || 0,
+    pieces: parseInt(document.getElementById('bien-pieces').value) || 0,
+    statut: document.getElementById('bien-statut').value,
+    desc: document.getElementById('bien-desc').value,
+    date: new Date().toISOString().split('T')[0]
+  };
+  if (!b.adresse) { toast('Adresse requise', false); return; }
+  biens.push(b);
+  saveData('biens', biens);
+  closeModal('modal-bien');
+  toast('Bien ajouté ✓');
+  renderBiens();
+  renderDashboard();
+  document.getElementById('nb-biens').textContent = biens.length;
+}
+
+function saveContact() {
+  const c = {
+    id: Date.now(),
+    prenom: document.getElementById('contact-prenom').value,
+    nom: document.getElementById('contact-nom').value,
+    tel: document.getElementById('contact-tel').value,
+    email: document.getElementById('contact-email').value,
+    profil: document.getElementById('contact-profil').value,
+    budget: parseFloat(document.getElementById('contact-budget').value) || 0,
+    notes: document.getElementById('contact-notes').value,
+    date: new Date().toISOString().split('T')[0]
+  };
+  if (!c.prenom || !c.nom) { toast('Prénom et nom requis', false); return; }
+  contacts.push(c);
+  saveData('contacts', contacts);
+  closeModal('modal-contact');
+  toast('Contact ajouté ✓');
+  renderContacts();
+  renderDashboard();
+  document.getElementById('nb-contacts').textContent = contacts.length;
+}
+
+function saveVisite() {
+  const v = {
+    id: Date.now(),
+    bienId: parseInt(document.getElementById('visite-bien').value),
+    contactId: parseInt(document.getElementById('visite-contact').value),
+    date: document.getElementById('visite-date').value,
+    heure: document.getElementById('visite-heure').value,
+    duree: parseInt(document.getElementById('visite-duree').value),
+    statut: document.getElementById('visite-statut').value,
+    notes: document.getElementById('visite-notes').value
+  };
+  if (!v.bienId || !v.contactId || !v.date) { toast('Remplissez tous les champs', false); return; }
+  visites.push(v);
+  saveData('visites', visites);
+  closeModal('modal-visite');
+  toast('Visite planifiée ✓');
+  renderAgenda();
+  renderDashboard();
+  document.getElementById('nb-visites').textContent = visites.length;
+}
+
+// ===================== EDIT / UPDATE / DELETE =====================
+let currentEditId = null;
+
+// --- BIEN ---
+function editBien(id) {
+  const b = biens.find(x => x.id === id);
+  if (!b) return;
+  currentEditId = id;
+  document.getElementById('edit-bien-type-bien').value = b.type;
+  document.getElementById('edit-bien-transaction').value = b.transaction;
+  document.getElementById('edit-bien-adresse').value = b.adresse;
+  document.getElementById('edit-bien-prix').value = b.prix;
+  document.getElementById('edit-bien-surface').value = b.surface;
+  document.getElementById('edit-bien-pieces').value = b.pieces;
+  document.getElementById('edit-bien-statut').value = b.statut;
+  document.getElementById('edit-bien-desc').value = b.desc || '';
+  document.getElementById('modal-edit-bien').classList.add('open');
+}
+
+function updateBien() {
+  const idx = biens.findIndex(x => x.id === currentEditId);
+  if (idx === -1) return;
+  biens[idx] = {
+    ...biens[idx],
+    type: document.getElementById('edit-bien-type-bien').value,
+    transaction: document.getElementById('edit-bien-transaction').value,
+    adresse: document.getElementById('edit-bien-adresse').value,
+    prix: parseFloat(document.getElementById('edit-bien-prix').value) || 0,
+    surface: parseFloat(document.getElementById('edit-bien-surface').value) || 0,
+    pieces: parseInt(document.getElementById('edit-bien-pieces').value) || 0,
+    statut: document.getElementById('edit-bien-statut').value,
+    desc: document.getElementById('edit-bien-desc').value,
+  };
+  saveData('biens', biens);
+  closeModal('modal-edit-bien');
+  toast('Bien mis à jour ✓');
+  renderBiens(); renderDashboard();
+}
+
+// --- CONTACT ---
+function editContact(id) {
+  const c = contacts.find(x => x.id === id);
+  if (!c) return;
+  currentEditId = id;
+  document.getElementById('edit-contact-prenom').value = c.prenom;
+  document.getElementById('edit-contact-nom').value = c.nom;
+  document.getElementById('edit-contact-tel').value = c.tel;
+  document.getElementById('edit-contact-email').value = c.email;
+  document.getElementById('edit-contact-profil').value = c.profil;
+  document.getElementById('edit-contact-budget').value = c.budget || '';
+  document.getElementById('edit-contact-notes').value = c.notes || '';
+  document.getElementById('modal-edit-contact').classList.add('open');
+}
+
+function updateContact() {
+  const idx = contacts.findIndex(x => x.id === currentEditId);
+  if (idx === -1) return;
+  contacts[idx] = {
+    ...contacts[idx],
+    prenom: document.getElementById('edit-contact-prenom').value,
+    nom: document.getElementById('edit-contact-nom').value,
+    tel: document.getElementById('edit-contact-tel').value,
+    email: document.getElementById('edit-contact-email').value,
+    profil: document.getElementById('edit-contact-profil').value,
+    budget: parseFloat(document.getElementById('edit-contact-budget').value) || 0,
+    notes: document.getElementById('edit-contact-notes').value,
+  };
+  saveData('contacts', contacts);
+  closeModal('modal-edit-contact');
+  toast('Contact mis à jour ✓');
+  renderContacts(); renderDashboard();
+}
+
+// --- VISITE ---
+function editVisite(id) {
+  const v = visites.find(x => x.id === id);
+  if (!v) return;
+  currentEditId = id;
+  document.getElementById('edit-visite-bien').innerHTML =
+    biens.map(b => `<option value="${b.id}" ${b.id === v.bienId ? 'selected' : ''}>${b.type} - ${b.adresse}</option>`).join('');
+  document.getElementById('edit-visite-contact').innerHTML =
+    contacts.map(c => `<option value="${c.id}" ${c.id === v.contactId ? 'selected' : ''}>${c.prenom} ${c.nom}</option>`).join('');
+  document.getElementById('edit-visite-date').value = v.date;
+  document.getElementById('edit-visite-heure').value = v.heure;
+  document.getElementById('edit-visite-duree').value = v.duree;
+  document.getElementById('edit-visite-statut').value = v.statut;
+  document.getElementById('edit-visite-notes').value = v.notes || '';
+  document.getElementById('modal-edit-visite').classList.add('open');
+}
+
+function updateVisite() {
+  const idx = visites.findIndex(x => x.id === currentEditId);
+  if (idx === -1) return;
+  visites[idx] = {
+    ...visites[idx],
+    bienId: parseInt(document.getElementById('edit-visite-bien').value),
+    contactId: parseInt(document.getElementById('edit-visite-contact').value),
+    date: document.getElementById('edit-visite-date').value,
+    heure: document.getElementById('edit-visite-heure').value,
+    duree: parseInt(document.getElementById('edit-visite-duree').value),
+    statut: document.getElementById('edit-visite-statut').value,
+    notes: document.getElementById('edit-visite-notes').value,
+  };
+  saveData('visites', visites);
+  closeModal('modal-edit-visite');
+  toast('Visite mise à jour ✓');
+  renderAgenda(); renderDashboard();
+}
+
+// --- MANDAT ---
+function editMandat(id) {
+  const m = mandats.find(x => x.id === id);
+  if (!m) return;
+  currentEditId = id;
+  document.getElementById('edit-mandat-bien').innerHTML =
+    biens.map(b => `<option value="${b.id}" ${b.id === m.bienId ? 'selected' : ''}>${b.type} - ${b.adresse}</option>`).join('');
+  document.getElementById('edit-mandat-proprietaire').value = m.proprietaire;
+  document.getElementById('edit-mandat-type').value = m.type;
+  document.getElementById('edit-mandat-prix').value = m.prix;
+  document.getElementById('edit-mandat-avancement').value = m.avancement;
+  document.getElementById('edit-mandat-debut').value = m.debut;
+  document.getElementById('edit-mandat-fin').value = m.fin;
+  document.getElementById('modal-edit-mandat').classList.add('open');
+}
+
+function updateMandat() {
+  const idx = mandats.findIndex(x => x.id === currentEditId);
+  if (idx === -1) return;
+  mandats[idx] = {
+    ...mandats[idx],
+    bienId: parseInt(document.getElementById('edit-mandat-bien').value),
+    proprietaire: document.getElementById('edit-mandat-proprietaire').value,
+    type: document.getElementById('edit-mandat-type').value,
+    prix: parseFloat(document.getElementById('edit-mandat-prix').value) || 0,
+    avancement: parseInt(document.getElementById('edit-mandat-avancement').value) || 0,
+    debut: document.getElementById('edit-mandat-debut').value,
+    fin: document.getElementById('edit-mandat-fin').value,
+  };
+  saveData('mandats', mandats);
+  closeModal('modal-edit-mandat');
+  toast('Mandat mis à jour ✓');
+  renderMandats(); renderDashboard();
+}
+
+// --- CONFIRM DELETE ---
+let pendingDelete = null;
+
+function confirmDelete(type, id) {
+  pendingDelete = { type, id };
+  const labels = { bien: 'ce bien', contact: 'ce contact', visite: 'cette visite', mandat: 'ce mandat' };
+  document.getElementById('confirm-text').textContent = `Voulez-vous vraiment supprimer ${labels[type] || 'cet élément'} ? Cette action est irréversible.`;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+
+function closeConfirm() {
+  pendingDelete = null;
+  document.getElementById('confirm-overlay').classList.remove('open');
+}
+
+document.getElementById('confirm-ok-btn').onclick = function() {
+  if (!pendingDelete) return;
+  const { type, id } = pendingDelete;
+  if (type === 'bien') {
+    biens = biens.filter(x => x.id !== id);
+    saveData('biens', biens);
+    renderBiens(); renderDashboard();
+    document.getElementById('nb-biens').textContent = biens.length;
+  } else if (type === 'contact') {
+    contacts = contacts.filter(x => x.id !== id);
+    saveData('contacts', contacts);
+    renderContacts(); renderDashboard();
+    document.getElementById('nb-contacts').textContent = contacts.length;
+  } else if (type === 'visite') {
+    visites = visites.filter(x => x.id !== id);
+    saveData('visites', visites);
+    renderAgenda(); renderDashboard();
+    document.getElementById('nb-visites').textContent = visites.length;
+  } else if (type === 'mandat') {
+    mandats = mandats.filter(x => x.id !== id);
+    saveData('mandats', mandats);
+    renderMandats(); renderDashboard();
+    document.getElementById('nb-mandats').textContent = mandats.length;
+  }
+  closeConfirm();
+  toast('Supprimé ✓');
+};
+
+document.getElementById('confirm-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
+});
+
+// ===================== UTILS =====================
+function formatPrix(n) {
+  return n.toLocaleString('fr-FR');
+}
+
+function toast(msg, success = true) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + (success ? 'success' : '');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ===================== INIT =====================
+renderDashboard();
+</script>
+</body>
+</html>
